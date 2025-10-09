@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Collection</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font and set background for a centered card layout -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f9; /* Light, neutral background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="feedback-card" class="w-full max-w-xl bg-white p-8 md:p-10 rounded-xl shadow-2xl transition duration-300 transform hover:shadow-3xl">
+        
+        <!-- Header -->
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Share Your Feedback</h1>
+        <p class="text-gray-500 mb-8">We'd love to hear about your experience. Please select a rating to begin.</p>
+
+        <!-- Thumbs Up/Down Rating Section -->
+        <div class="mb-8">
+            <label class="block text-lg font-medium text-gray-700 mb-3">How was your overall experience?</label>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                
+                <!-- Thumbs Up Button -->
+                <button 
+                    id="thumb-up-btn" 
+                    data-rating="positive"
+                    class="rating-btn flex items-center justify-center p-4 rounded-lg border-2 border-gray-300 text-gray-500 transition duration-150 hover:bg-green-50 hover:border-green-500 hover:text-green-600 focus:outline-none focus:ring-4 focus:ring-green-100 w-full"
+                    onclick="setRating('positive')"
+                >
+                    <!-- Lucide Thumbs Up Icon (Inline SVG) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 lucide lucide-thumbs-up"><path d="M7 10v12"/><path d="M15 10l.3 2.5a2 2 0 0 0 2 1.5h1.5a2 2 0 0 0 2-2.2L21 8a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6c0 1.1.9 2 2 2h4l.3-.8c.2-.5.7-.8 1.2-.8h2.7c.4 0 .7.3.7.7v1.7c0 .4-.3.7-.7.7H15"/><path d="M12 2v3"/></svg>
+                    <span class="font-semibold text-lg">Good</span>
+                </button>
+                
+                <!-- Thumbs Down Button -->
+                <button 
+                    id="thumb-down-btn" 
+                    data-rating="negative"
+                    class="rating-btn flex items-center justify-center p-4 rounded-lg border-2 border-gray-300 text-gray-500 transition duration-150 hover:bg-red-50 hover:border-red-500 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-red-100 w-full"
+                    onclick="setRating('negative')"
+                >
+                    <!-- Lucide Thumbs Down Icon (Inline SVG) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 lucide lucide-thumbs-down"><path d="M7 14V2"/><path d="M17 14l-.3-2.5a2 2 0 0 0-2-1.5H13.2a2 2 0 0 0-2 2.2L13 16a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-6c0-1.1-.9-2-2-2h-4l-.3.8c-.2.5-.7.8-1.2.8H8.8c-.4 0-.7-.3-.7-.7V6.8c0-.4.3-.7.7-.7H9"/><path d="M12 22v-3"/></svg>
+                    <span class="font-semibold text-lg">Poor</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Free Form Feedback Textarea -->
+        <div class="mb-8">
+            <label for="feedback-text" class="block text-lg font-medium text-gray-700 mb-3">Tell us more (Optional):</label>
+            <textarea 
+                id="feedback-text" 
+                rows="5" 
+                class="w-full p-4 border border-gray-300 rounded-lg shadow-inner focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 resize-y" 
+                placeholder="Type your detailed feedback here..."
+            ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+            <button 
+                id="submit-btn"
+                class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition duration-150 transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                onclick="handleSubmit()"
+                disabled
+            >
+                Submit Feedback
+            </button>
+        </div>
+        
+        <!-- Status Message Box (Replaces alert()) -->
+        <div id="status-message" class="mt-6 p-4 text-center rounded-lg hidden transition duration-300 ease-in-out"></div>
+
+    </div>
+
+    <script>
+        // Global state to track the selected rating
+        let currentRating = null;
+
+        /**
+         * Selects a rating (positive or negative) and updates the UI.
+         * @param {string} rating - 'positive' or 'negative'
+         */
+        function setRating(rating) {
+            currentRating = rating;
+            
+            const upBtn = document.getElementById('thumb-up-btn');
+            const downBtn = document.getElementById('thumb-down-btn');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // --- Reset all buttons to default state ---
+            // Remove active/selected classes
+            upBtn.classList.remove('bg-green-100', 'border-green-600', 'text-green-700');
+            downBtn.classList.remove('bg-red-100', 'border-red-600', 'text-red-700');
+            
+            // Re-apply default/inactive classes
+            upBtn.classList.add('border-gray-300', 'text-gray-500');
+            downBtn.classList.add('border-gray-300', 'text-gray-500');
+            
+            // --- Set the selected button to active state ---
+            if (rating === 'positive') {
+                upBtn.classList.remove('border-gray-300', 'text-gray-500');
+                upBtn.classList.add('bg-green-100', 'border-green-600', 'text-green-700');
+            } else if (rating === 'negative') {
+                downBtn.classList.remove('border-gray-300', 'text-gray-500');
+                downBtn.classList.add('bg-red-100', 'border-red-600', 'text-red-700');
+            }
+
+            // Enable the submit button once a rating is selected
+            submitBtn.disabled = false;
+        }
+
+        /**
+         * Handles the submission of the feedback form.
+         * In a real app, this would send data to a backend server.
+         */
+        async function handleSubmit() {
+            const feedbackText = document.getElementById('feedback-text').value.trim();
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // 1. Validate: Rating is mandatory
+            if (!currentRating) {
+                displayStatus('Please select a rating (Thumbs Up or Thumbs Down) before submitting.', 'error');
+                return;
+            }
+
+            // 2. Prepare data object
+            const feedbackData = {
+                rating: currentRating,
+                comment: feedbackText || 'No detailed comment provided.',
+                timestamp: new Date().toISOString()
+            };
+
+            // 3. Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            displayStatus('Processing feedback...', 'info');
+
+            // --- SIMULATED API CALL ---
+            // Simulate a network request delay.
+            await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+            // 4. Log the data to the console (where a backend would receive it)
+            console.log("--- Feedback Submitted ---");
+            console.log(JSON.stringify(feedbackData, null, 2));
+            console.log("--------------------------");
+
+            // 5. Show success message
+            displayStatus('Thank you! Your feedback has been successfully submitted.', 'success');
+            
+            // 6. Reset the form 
+            currentRating = null;
+            document.getElementById('feedback-text').value = '';
+
+            // Reset UI
+            setRating(null); 
+            submitBtn.textContent = 'Submit Feedback';
+            submitBtn.disabled = true;
+
+            // Clear status message after a few seconds
+            setTimeout(() => {
+                document.getElementById('status-message').classList.add('hidden');
+            }, 5000);
+        }
+
+        /**
+         * Displays a temporary status message in the dedicated message box.
+         * @param {string} message - The message to display.
+         * @param {('success'|'error'|'info')} type - The type of message to style it correctly.
+         */
+        function displayStatus(message, type) {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = message;
+            
+            // Reset classes
+            statusMessage.className = 'mt-6 p-4 font-medium text-center rounded-lg transition duration-300 ease-in-out';
+
+            // Apply specific classes based on type
+            if (type === 'success') {
+                statusMessage.classList.add('bg-green-100', 'text-green-800', 'border-green-300', 'border');
+            } else if (type === 'error') {
+                statusMessage.classList.add('bg-red-100', 'text-red-800', 'border-red-300', 'border');
+            } else if (type === 'info') {
+                 statusMessage.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-300', 'border');
+            }
+
+            statusMessage.classList.remove('hidden');
+        }
+
+        // Initialize: Ensure submit button is disabled on load
+        window.onload = () => {
+             document.getElementById('submit-btn').disabled = true;
+        }
+
+    </script>
+
+</body>
+</html>
