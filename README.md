@@ -2,36 +2,38 @@
 1. Would be nice to get supabase up and running
     - Since supabase is unauthed, I need a captha system and cloudflare to protect myself against ddos and script kiddies
 
-2025/10/10
+2025/10/13
 1. Would be nice to get supabase integration complete
     a. This would include login and login considerations
 2. I will likely get inspire images today, so I will integrate those graphics into the login page
 3. Will have to continue this work over the weekend
 
-2025/10/11
+2025/10/14
 1. Complete supabase integration
  a. Including login
 Stretch
 3. Captchas too?
 
-2025/10/12
+2025/10/15
 1. Landing page
     - Relevant scientific literature section --> Include the research into what women see
 2. Simple home page which aggregates feedback related to you
 
-2025/10/13
+2025/10/16
 1. Inspire work
 
-2025/10/14
+2025/10/17
 1. Do the weekly meeting then get back to feedback.io
 
 UX
-https://gemini.google.com/app/da39e99e39577cab
+- https://gemini.google.com/app/da39e99e39577cab
+- Word Count
 
 UI
     - I dont have a theme, or any UI philosophy yet, please generate a page for collecting free form feedback, it should also include a thumb up button and a thumb down button, also a submit button
 
 Features
+- Insights are available once a month, like youtube highlights, you also get one per year.
 - Timeline
     - Horizontal which is aggregated ( 1 day, total results)
     - Thumbs 
